@@ -110,4 +110,21 @@ public final class PacketID {
 
     public final static char C2SLobbyJoin = 0x237A;
     public final static char C2SLobbyLeave = 0x2379;
+
+    public final static char C2SMessengerFriendDataRequest = 0x1F49;
+    public final static char S2CMessengerFriendDataAnswer = 0x1F4A;
+    public final static char C2SMessengerFriendAddRequest = 0x1F41;
+    public final static char S2CMessengerFriendAddAnswer = 0x1F42;
+    public final static char C2SMessengerFriendDeleteRequest = 0x1F55;
+    public final static char C2SMessengerMessageSendRequest = 0x1F5F;
+    public final static char S2CMessengerMessageSendAnswer = 0x1F60;
+    public final static char C2SMessengerMessageDeleteRequest = 0x1F62;
+    public final static char C2SMessengerMessageDataRequest = 0x1F63;
+    public final static char S2CMessengerMessageDataAnswer = 0x1F64;
+    public final static char C2SMessengerMessageReadRequest = 0x1F67;
+    public final static char S2CMessengerMessageReadAnswer = 0x1F68;
+    public final static char C2SMessengerParcelDataRequest = 0x219C;
+    public final static char S2CMessengerParcelDataAnswer = 0x219D;
+    public final static char C2SMessengerProposalDataRequest = 0x2526;
+    public final static char S2CMessengerProposalDataAnswer = 0x2527;
 }

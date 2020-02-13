@@ -3,6 +3,7 @@ package com.ft.emulator.server.database.model.character;
 import com.ft.emulator.common.model.AbstractBaseModel;
 import com.ft.emulator.server.database.model.account.Account;
 import com.ft.emulator.server.database.model.challenge.ChallengeProgress;
+import com.ft.emulator.server.database.model.messenger.FriendList;
 import com.ft.emulator.server.database.model.pocket.Pocket;
 import com.ft.emulator.server.database.model.tutorial.TutorialProgress;
 import lombok.Getter;
@@ -29,6 +30,9 @@ public class CharacterPlayer extends AbstractBaseModel {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, optional = true)
     private Pocket pocket;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "characterPlayer")
+    private List<FriendList> friendList;
 
     // general
     private Boolean firstCharacter = false;

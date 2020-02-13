@@ -15,6 +15,7 @@ import com.ft.emulator.server.database.model.character.StatusPointsAddedDto;
 import com.ft.emulator.server.database.model.home.AccountHome;
 import com.ft.emulator.server.database.model.home.HomeInventory;
 import com.ft.emulator.server.database.model.item.Product;
+import com.ft.emulator.server.database.model.messenger.FriendList;
 import com.ft.emulator.server.database.model.pocket.CharacterPlayerPocket;
 import com.ft.emulator.server.database.model.pocket.Pocket;
 import com.ft.emulator.server.database.model.tutorial.Tutorial;
@@ -44,6 +45,7 @@ import com.ft.emulator.server.game.server.packets.home.S2CHomeItemsLoadAnswerPac
 import com.ft.emulator.server.game.server.packets.inventory.*;
 import com.ft.emulator.server.game.server.packets.lobby.C2SLobbyUserListRequestPacket;
 import com.ft.emulator.server.game.server.packets.lobby.S2CLobbyUserListAnswerPacket;
+import com.ft.emulator.server.game.server.packets.messenger.S2CMessengerFriendDataAnswerPacket;
 import com.ft.emulator.server.game.server.packets.room.*;
 import com.ft.emulator.server.game.server.packets.shop.*;
 import com.ft.emulator.server.game.server.packets.tutorial.C2STutorialBeginRequestPacket;
@@ -87,6 +89,7 @@ public class PacketHandler {
     private GenericModelDao<Tutorial> tutorialDao;
     private GenericModelDao<TutorialProgress> tutorialProgressDao;
     private GenericModelDao<Product> productDao;
+    private GenericModelDao<FriendList> friendListDao;
 
     public PacketHandler(GameHandler gameHandler) {
 
@@ -104,6 +107,7 @@ public class PacketHandler {
 	tutorialDao = new GenericModelDao<>(EntityManagerFactoryUtil.INSTANCE.getEntityManagerFactory(), Tutorial.class);
 	tutorialProgressDao = new GenericModelDao<>(EntityManagerFactoryUtil.INSTANCE.getEntityManagerFactory(), TutorialProgress.class);
 	productDao = new GenericModelDao<>(EntityManagerFactoryUtil.INSTANCE.getEntityManagerFactory(), Product.class);
+	friendListDao = new GenericModelDao<>(EntityManagerFactoryUtil.INSTANCE.getEntityManagerFactory(), FriendList.class);
     }
 
     public void handleDisconnect(Client client) {
@@ -347,6 +351,11 @@ public class PacketHandler {
 
 	case PacketID.C2SHeartbeat:
 	case PacketID.C2SLoginAliveClient:
+	    break;
+
+	case PacketID.C2SMessengerFriendDataRequest:
+
+	    this.handleMessengerFriendDataRequestPacket(client, packet);
 	    break;
 
 	default:
@@ -1543,6 +1552,32 @@ public class PacketHandler {
 
     private void handleEmblemListRequestPacket(Client client, Packet packet) {
 
+    }
+
+    private void handleMessengerFriendDataRequestPacket(Client client, Packet packet) {
+
+	// load friend list
+	Map<String, Object> filter = new HashMap<>();
+	filter.put("characterPlayer", client.getActiveCharacterPlayer());
+	List<FriendList> friendList = friendListDao.getList(filter, "characterPlayerFriend");
+	client.getActiveCharacterPlayer().setFriendList(friendList);
+
+        List<Long> characterPlayerList = this.gameHandler.getClients().stream()
+		.filter(c -> c.getActiveCharacterPlayer() != null)
+		.map(c -> c.getActiveCharacterPlayer().getId())
+		.collect(Collectors.toList());
+
+        friendList.forEach(fl -> {
+            if(characterPlayerList.contains(fl.getCharacterPlayerFriend().getId())) {
+                fl.setServerId((char) 1);
+	    }
+            else {
+                fl.setServerId((char) -1);
+	    }
+	});
+
+	S2CMessengerFriendDataAnswerPacket friendDataAnswerPacket = new S2CMessengerFriendDataAnswerPacket(friendList);
+	client.getPacketStream().write(friendDataAnswerPacket);
     }
 
     private void handleUnknown(Client client, Packet packet) {
