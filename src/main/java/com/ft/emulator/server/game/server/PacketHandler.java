@@ -45,6 +45,7 @@ import com.ft.emulator.server.game.server.packets.home.S2CHomeItemsLoadAnswerPac
 import com.ft.emulator.server.game.server.packets.inventory.*;
 import com.ft.emulator.server.game.server.packets.lobby.C2SLobbyUserListRequestPacket;
 import com.ft.emulator.server.game.server.packets.lobby.S2CLobbyUserListAnswerPacket;
+import com.ft.emulator.server.game.server.packets.messenger.C2SMessengerFriendAddRequestPacket;
 import com.ft.emulator.server.game.server.packets.messenger.S2CMessengerFriendDataAnswerPacket;
 import com.ft.emulator.server.game.server.packets.room.*;
 import com.ft.emulator.server.game.server.packets.shop.*;
@@ -356,6 +357,11 @@ public class PacketHandler {
 	case PacketID.C2SMessengerFriendDataRequest:
 
 	    this.handleMessengerFriendDataRequestPacket(client, packet);
+	    break;
+
+	case PacketID.C2SMessengerFriendAddRequest:
+
+	    this.handleMessengerFriendAddRequestPacket(client, packet);
 	    break;
 
 	default:
@@ -1578,6 +1584,13 @@ public class PacketHandler {
 
 	S2CMessengerFriendDataAnswerPacket friendDataAnswerPacket = new S2CMessengerFriendDataAnswerPacket(friendList);
 	client.getPacketStream().write(friendDataAnswerPacket);
+    }
+
+    private void handleMessengerFriendAddRequestPacket(Client client, Packet packet) {
+
+	C2SMessengerFriendAddRequestPacket messengerFriendAddRequestPacket = new C2SMessengerFriendAddRequestPacket(packet);
+
+
     }
 
     private void handleUnknown(Client client, Packet packet) {
